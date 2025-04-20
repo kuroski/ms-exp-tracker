@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link href="/wails.png" rel="icon" type="image/svg+xml" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Wails App</title>
+  </head>
+  <body class="h-dvh">
+    <div class="p-2 text-xs bg-background rounded-t-lg" x-data>
+      <div class="grid grid-cols-2 gap-1 bg-white">
+        <div class="flex flex-col">
+          <span class="text-muted-foreground text-[10px]">EXP RATE</span>
+          <div class="flex items-center gap-1">
+            <svg
+              class="h-3 w-3 text-muted-foreground"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-trending-up-icon lucide-trending-up"
+            >
+              <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+              <polyline points="16 7 22 7 22 13" />
+            </svg>
+            <span
+              class="font-medium tabular-nums"
+              x-text="$store.stats.ExpText"
+            ></span>
+          </div>
+        </div>
+
+        <div class="flex flex-col">
+          <span class="text-muted-foreground text-[10px]">LEVEL UP IN</span>
+          <div class="flex items-center gap-1">
+            <svg
+              class="h-3 w-3 text-muted-foreground"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-clock-icon lucide-clock"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+            <span
+              class="font-medium tabular-nums"
+              x-text="$store.stats.TimeToLevelUpText"
+            ></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-2 pt-1 border-t text-[10px] text-muted-foreground">
+        <div class="flex justify-between items-center">
+          <span>Percentage rate</span>
+          <span
+            class="text-foreground font-medium tabular-nums"
+            x-text="$store.stats.PercentText"
+          ></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="h-[35px] p-2 border-6 border-border rounded-b-lg"></div>
+    <script src="/src/main.js" type="module"></script>
+  </body>
+</html>

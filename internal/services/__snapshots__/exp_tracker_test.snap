@@ -1,0 +1,13 @@
+
+[TestExpTracker_CalculateStats - 1]
+{
+ "CurrentXp": 1500,
+ "LevelPercent": 50,
+ "TimeToLevelUp": 60,
+ "XpRate": 0.8333333333333334
+}
+---
+
+[TestExpTracker_CalculateStats - 2]
+XP Rate: 0.83 %/min, Time To Level: 60.0 min
+---

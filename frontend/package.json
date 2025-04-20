@@ -1,0 +1,23 @@
+{
+  "name": "frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build:dev": "vite build --minify false --mode development",
+    "build": "vite build --mode production",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@wailsio/runtime": "latest",
+    "vite": "6.2.6"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "4.1.4",
+    "@tailwindcss/vite": "4.1.4",
+    "alpinejs": "3.14.9",
+    "humanize-duration": "3.32.1",
+    "tailwindcss": "4.1.4"
+  }
+}
