@@ -9,7 +9,6 @@ import (
 
 	"github.com/gkampitakis/go-snaps/snaps"
 	"github.com/kuroski/ms-exp-tracker/internal/clock"
-	"github.com/kuroski/ms-exp-tracker/internal/logger"
 )
 
 type MockExpCrawler struct {
@@ -108,10 +107,12 @@ func TestExpTracker_ErrorHandling(t *testing.T) {
 }
 
 func TestExpTracker_CalculateStats(t *testing.T) {
+	expCrawler := &MockExpCrawler{}
+	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
 	args := Args{
-		ExpCrawler: &MockExpCrawler{},
+		ExpCrawler: expCrawler,
 		Clock:      newFakeClock(),
-		Logger:     logger.NewLogger(),
+		Logger:     logger,
 	}
 	tracker := NewExpTracker(args)
 

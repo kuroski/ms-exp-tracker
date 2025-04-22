@@ -6,7 +6,6 @@ import (
 	"image"
 	"image/color"
 	"image/jpeg"
-	"os"
 	"regexp"
 	"strconv"
 	"time"
@@ -45,10 +44,10 @@ func (s *ScreenExpCrawler) Crawl() (result CrawlResult, err error) {
 		return CrawlResult{}, err
 	}
 
-	simg, _, _ := image.Decode(bytes.NewReader(img))
-	f, _ := os.Create(fmt.Sprintf(".tmp/%d_crawl.jpeg", time.Now().Unix()))
-	defer f.Close()
-	jpeg.Encode(f, simg, &jpeg.Options{Quality: 90})
+	// simg, _, _ := image.Decode(bytes.NewReader(img))
+	// f, _ := os.Create(fmt.Sprintf(".tmp/%d_crawl.jpeg", time.Now().Unix()))
+	// defer f.Close()
+	// jpeg.Encode(f, simg, &jpeg.Options{Quality: 90})
 
 	return s.extractXPFromImage(img)
 }
