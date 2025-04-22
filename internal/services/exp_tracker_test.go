@@ -9,6 +9,7 @@ import (
 
 	"github.com/gkampitakis/go-snaps/snaps"
 	"github.com/kuroski/ms-exp-tracker/internal/clock"
+	"github.com/kuroski/ms-exp-tracker/internal/logger"
 )
 
 type MockExpCrawler struct {
@@ -77,7 +78,6 @@ func TestExpTracker_RunAndStop(t *testing.T) {
 	case <-time.After(500 * time.Millisecond):
 		t.Fatal("Timed out waiting for goroutine to exit")
 	}
-
 }
 
 func TestExpTracker_ErrorHandling(t *testing.T) {
@@ -108,26 +108,29 @@ func TestExpTracker_ErrorHandling(t *testing.T) {
 }
 
 func TestExpTracker_CalculateStats(t *testing.T) {
-	tracker := &ExpTracker{
-		measurements: []Measurement{},
+	args := Args{
+		ExpCrawler: &MockExpCrawler{},
+		Clock:      newFakeClock(),
+		Logger:     logger.NewLogger(),
 	}
+	tracker := NewExpTracker(args)
 
 	firstMeasurement := Measurement{
 		exp:        1000,
-		percentage: 25,
-		createdAt:  time.Date(2025, 1, 1, 14, 0, 0, 0, time.Local),
+		percentage: 50,
+		createdAt:  args.Clock.Now().Add(-time.Second * 100), // 1.6 mins
 	}
 
 	secondMeasurement := Measurement{
-		exp:        1500,
-		percentage: 50,
-		createdAt:  time.Date(2025, 1, 1, 14, 30, 0, 0, time.Local),
+		exp:        1100,
+		percentage: 60,
+		createdAt:  args.Clock.Now(),
 	}
 
 	tracker.measurements = append(tracker.measurements, firstMeasurement, secondMeasurement)
 
-	stats := tracker.getStats()
-
+	// ExpPerSecond = (1100 - 1000) / 100 = 1.0
+	// PercentPerSecond = (60 - 60) / 100 = 0.1
+	// TimeToLevelUpPerSecond = (100 - 60) / 0.1 = 400
 	snaps.MatchJSON(t, tracker.getStats())
-	snaps.MatchSnapshot(t, fmt.Sprintf("XP Rate: %.2f %%/min, Time To Level: %.1f min", stats.ExpPerSecond, stats.TimeToLevelUpPerSecond))
 }

@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 includes:
   common: ./build/Taskfile.yml
@@ -9,7 +9,7 @@ includes:
 vars:
   APP_NAME: "ms-exp-tracker"
   BIN_DIR: "bin"
-  VITE_PORT: '{{.WAILS_VITE_PORT | default 9245}}'
+  VITE_PORT: "{{.WAILS_VITE_PORT | default 9245}}"
 
 tasks:
   build:
@@ -32,3 +32,25 @@ tasks:
     cmds:
       - wails3 dev -config ./build/config.yml -port {{.VITE_PORT}}
 
+  tidy:
+    summary: Formats .go files and tidies dependencies
+    cmds:
+      - go fmt ./...
+      - go mod tidy
+
+  audit:
+    summary: Runs quality control checks
+    cmds:
+      - echo 'Checking module dependencies'
+      - go mod tidy -diff
+      - go mod verify
+      - echo 'Vetting code...'
+      - go vet ./...
+      - staticcheck ./...
+      - echo 'Running tests...'
+      - go test -race -vet=off ./...
+
+  test:
+    summary: Runs tests
+    cmds:
+      - go test ./...
