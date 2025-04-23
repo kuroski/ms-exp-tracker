@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"fmt"
 	"log"
 
 	"github.com/kuroski/ms-exp-tracker/internal/clock"
@@ -39,11 +40,9 @@ func main() {
 			TitleBar:                application.MacTitleBarDefault,
 		},
 		BackgroundType: application.BackgroundTypeTransparent,
-		// BackgroundColour: application.NewRGB(27, 38, 54),
-		URL: "/",
+		URL:            "/",
 	})
 
-	// Initialize tracker service
 	args := services.Args{
 		ExpCrawler: services.NewScreenExpCrawler(window),
 		Interval:   services.DefaultTickerInterval,
@@ -51,19 +50,17 @@ func main() {
 		Logger:     logger.NewLogger(),
 	}
 	tracker := services.NewExpTracker(args)
-	defer tracker.Stop() // ensure clean shutdown
+	defer tracker.Stop()
 
-	// Start the tracker in a separate goroutine
 	go tracker.Run()
 
-	// Listen for results and forward to frontend
 	go func() {
 		for result := range tracker.Ch {
 			if result.Err != nil {
-				log.Printf("Error while tracking: %v", result.Err)
+				args.Logger.Info(fmt.Sprintf("Error while tracking: %v", result.Err))
 				continue
 			}
-			log.Printf("Emitting XP update: %+v", result.Stats)
+			args.Logger.Info(fmt.Sprintf("Emitting XP update: %+v", result.Stats))
 			app.EmitEvent("updateXP", result.Stats)
 		}
 	}()

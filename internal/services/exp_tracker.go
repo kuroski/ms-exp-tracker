@@ -12,7 +12,7 @@ import (
 
 const (
 	DefaultTickerInterval = 5 * time.Second
-	MaxMeasurements       = 100
+	maxMeasurements       = 100
 )
 
 type Measurement struct {
@@ -24,11 +24,9 @@ type Measurement struct {
 type Stats struct {
 	// xpPerMin := xpPerSecond * 60
 	// xpPerHour := xpPerSecond * 3600
-	// fmt.Printf("XP Rate: %.2f XP/min, %.2f XP/hour\n", xpPerMin, xpPerHour)
 	ExpPerSecond float64
 	// percPerMin := percPerSecond * 60
 	// percPerHour := percPerSecond * 3600
-	// fmt.Printf("Percentage Rate: %.2f%%/min, %.2f%%/hour\n", percPerMin, percPerHour)
 	PercentPerSecond float64
 	// fmt.Printf("Time to Level Up: %.2f minutes (%.2f hours)\n", timeToLevelUp/60, timeToLevelUp/3600)
 	TimeToLevelUpPerSecond float64
@@ -82,7 +80,7 @@ func (t *ExpTracker) Run() {
 	for {
 		select {
 		case <-t.ctx.Done():
-			t.args.Logger.Info("Ticker has been finished")
+			t.args.Logger.Info("Ticker has finished")
 			return
 		case <-ticker.C:
 			if err := t.recordMeasurement(); err != nil {
@@ -114,7 +112,7 @@ func (t *ExpTracker) sendStats() {
 	case t.Ch <- trackResult:
 		t.args.Logger.Info("Tick measurement", "stats:", trackResult.Stats)
 	default:
-		t.args.Logger.Debug("Skipped sending error due to full channel")
+		t.args.Logger.Debug("Skipped sending stats due to full channel")
 	}
 }
 
@@ -140,8 +138,8 @@ func (t *ExpTracker) recordMeasurement() error {
 		createdAt:  time.Now(),
 	})
 
-	if len(t.measurements) > MaxMeasurements {
-		t.measurements = t.measurements[len(t.measurements)-MaxMeasurements:]
+	if len(t.measurements) > maxMeasurements {
+		t.measurements = t.measurements[len(t.measurements)-maxMeasurements:]
 	}
 
 	return nil
