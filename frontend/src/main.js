@@ -36,7 +36,9 @@ Events.On("updateXP", (event) => {
   store.ExpText = ((data.ExpPerSecond ?? 0.0) * 60).toFixed(2) + "/min";
   store.PercentText = ((data.PercentPerSecond ?? 0.0) * 60).toFixed(2) + "/min";
 
-  const timeToLevelUpInMs = (data.TimeToLevelUpPerSecond ?? 0.0) * 1_000;
+  const timeToLevelUpInMs = Math.round(
+    (data.TimeToLevelUpPerSecond ?? 0.0) * 1_000,
+  );
   store.TimeToLevelUpText = shortEnglishHumanizer(timeToLevelUpInMs, {
     largest: 2,
     maxDecimalPoints: 2,
