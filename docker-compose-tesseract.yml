@@ -1,0 +1,5 @@
+services:
+  tesseract:
+    build:
+      context: .
+      dockerfile: Dockerfile.tesseract
