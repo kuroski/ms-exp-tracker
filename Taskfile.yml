@@ -61,11 +61,7 @@ tasks:
       - echo 'Deleting tesseract binary from current folder...'
       - rm -rf ./tesseract
       - echo 'Bringing up Docker Container...'
-      - docker compose -f docker-compose-tesseract.yml up -d
-      - echo 'Copying Built Tesseract Binary...'
-      - docker cp `docker compose -f docker-compose-tesseract.yml ps -q tesseract`:/tesseract-5.5.0/tesseract .
-      - echo 'Killing Container...'
-      - docker compose -f docker-compose-tesseract.yml kill
-      - echo 'Taking Container Down...'
-      - docker compose -f docker-compose-tesseract.yml down
-      - echo 'Done building static Tesseract binary!'
+      - docker build -t static-tesseract -f Dockerfile.tesseract .
+      - docker create --name tctmp static-tesseract
+      - docker cp tctmp:/tesseract .
+      - docker rm tctmp

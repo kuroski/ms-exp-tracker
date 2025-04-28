@@ -1,58 +1,25 @@
-FROM debian:buster-slim
+# Dockerfile (example)
+# Stage 1: build Tesseract statically
+FROM alpine:3.18 AS builder
+RUN apk add --no-cache build-base automake libtool pkgconfig autoconf \
+    cairo-dev pango-dev icu-dev \
+    zlib-dev libpng-dev libjpeg-turbo-dev \
+    leptonica-dev git wget
+WORKDIR /build
 
-RUN apt-get update && apt-get install -y \
-    wget \
-    git \
-    build-essential \
-    curl \
-    autoconf \
-    automake \
-    libtool \
-    pkg-config \
-    libicu-dev \
-    libpango1.0-dev \
-    libcairo2-dev \
-    libleptonica-dev \
-    libpng-dev \
-    libjpeg62-turbo-dev \
-    libtiff5-dev \
-    zlib1g-dev
+# Download and extract Tesseract source (use the desired version)
+RUN wget -qO tesseract.tar.gz https://github.com/tesseract-ocr/tesseract/archive/refs/tags/5.5.0.tar.gz && \
+    tar xzf tesseract.tar.gz --strip-components=1
 
-# Download and build Leptonica statically
-RUN wget http://www.leptonica.org/source/leptonica-1.85.0.tar.gz && \
-    tar -xzvf leptonica-1.85.0.tar.gz && \
-    cd leptonica-1.85.0 && \
-    ./configure --enable-static --disable-shared && \
-    make && \
-    make install
-
-# Download software and extract to a working directory
-ADD https://github.com/tesseract-ocr/tesseract/archive/5.5.0.tar.gz /
-RUN tar -xf 5.5.0.tar.gz
-
-# Switch to this working directory
-WORKDIR /tesseract-5.5.0
-
-# Run build commands
+# Configure and compile (disable shared libs for static linking)
 RUN ./autogen.sh && \
-    LIBLEPT_HEADERSDIR=/usr/local/include ./configure \
-    --enable-static \
-    --disable-shared \
-    --with-extra-libraries=/usr/local/lib && \
-    LDFLAGS="-static" make && \
-    make install
+    ./configure --prefix=/usr --disable-shared && \
+    make -j$(nproc) && make install
 
-# Copy the built binary and necessary data
-RUN mkdir -p /app/bin /app/share && \
-    cp /usr/local/bin/tesseract /app/bin/tesseract && \
-    cp -r /usr/local/share/tessdata /app/share/
+# Copy the static binary out of the container
+RUN cp /usr/bin/tesseract /tesseract
 
-# Use a minimal base image for the final stage
-FROM scratch
-COPY --from=0 /app /app
-
-# Set up environment variables
-ENV TESSDATA_PREFIX=/app/share/tessdata
-
-# This ensures the container never stops
-CMD ["sleep", "infinity"]
+# Stage 2: (Optional) Minimal image with only the static binary
+FROM scratch AS tesseract-static
+COPY --from=builder /tesseract /tesseract
+ENTRYPOINT ["/tesseract"]
